@@ -1,0 +1,10 @@
+name: EpicAutoReply
+main: com.gmail.justbru00.epic.autoreply.Main
+version: 1.0
+description: Auto Reply.
+author: Justin Brubaker
+
+
+commands:
+ epicautoreply:
+       description: Shows info about Auto Reply. 
