@@ -36,11 +36,14 @@ import org.bukkit.plugin.java.JavaPlugin;
  *   Contact me at justbru00@gmail.com
  *
  */
+@SuppressWarnings("deprecation")
 public class Main extends JavaPlugin implements Listener{
 	
-	private ConsoleCommandSender clogger = getServer().getConsoleSender();
+	private ConsoleCommandSender console = getServer().getConsoleSender();
 	public String prefix = color("&8[&bEpic&fAutoReply&8] &f");
 	public PluginDescriptionFile pdffile = this.getDescription();
+	public long waitTime = 500;
+	
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,	String label, String[] args) {
@@ -72,7 +75,7 @@ public class Main extends JavaPlugin implements Listener{
 	}
 
 	    public void msgConsole(String uncoloredmsg) {
-	    	 clogger.sendMessage(prefix + color(uncoloredmsg));
+	    	 console.sendMessage(prefix + color(uncoloredmsg));
 	    }
 	    
 	    public void msgPlayer(String uncoloredmsg, Player p){
@@ -83,14 +86,58 @@ public class Main extends JavaPlugin implements Listener{
 	    	return ChatColor.translateAlternateColorCodes('&', uncolored);
 	    }
 	    
-	    @SuppressWarnings("deprecation")
-		@EventHandler
+	    @EventHandler
 	    public void Player(PlayerChatEvent e){
 	    	Player p = e.getPlayer();
 	    	
-	    	if (e.getMessage().contains("op me")) {
-	    		Bukkit.broadcastMessage(prefix + color("Sorry I can not do that."));
+	    	if (e.getMessage().contains("op me")) {	    		
+	    		if (waitTimer(waitTime)) {
+	    	      Bukkit.broadcastMessage(prefix + color("Sorry I can not do that."));
+	    		} else {
+	    			error("Error in waitTimer method. In check: op me.", p);
+	    		}	    		
+	    	}
+	    	if (e.getMessage().contains("ban me")) {	    		
+	    		if (waitTimer(waitTime)) {
+	    	      Bukkit.broadcastMessage(prefix + color("Ok I will."));
+	    	      waitTimer(waitTime);
+	    	      Bukkit.dispatchCommand(console, "tempban " + p.getName() + " 1d You asked...");
+	    		} else {
+	    			error("Error in waitTimer method. In check: ban me.", p);
+	    		}	    		
+	    	}
+	    	if (e.getMessage().contains("i hate this server")) {	    		
+	    		if (waitTimer(waitTime)) {
+	    	      Bukkit.broadcastMessage(prefix + color("Really that is too bad..."));	    	     
+	    		} else {
+	    			error("Error in waitTimer method. In check: ban me.", p);
+	    		}	    		
+	    	}
+	    	if (e.getMessage().contains("how do i go to my plot")) {	    		
+	    		if (waitTimer(waitTime)) {
+	    	      Bukkit.broadcastMessage(prefix + color("Do /plot auto to get a plot. Then do /plot home"));
+	    	      waitTimer(waitTime);
+	    	      Bukkit.broadcastMessage(prefix + color("I will help you this time. :D"));
+	    	      Bukkit.dispatchCommand(console, "sudo " + p.getName() + "plot home");
+	    		} else {
+	    			error("Error in waitTimer method. In check: how do i get to my plot.", p);
+	    		}	    		
 	    	}
 	    
+	    }
+	    
+	    public boolean waitTimer(Long waitMills){
+	    	try {
+    			Thread.sleep(waitMills); 
+    			return true;
+    			} catch(InterruptedException ex) {
+    			Thread.currentThread().interrupt();
+    			return false;
+    			}
+	    }
+	    
+	    public void error(String msg, Player player){
+	    	msgConsole(color("&cError: " + msg));
+	    	msgPlayer(color("&cError: " + msg), player);
 	    }
 }
