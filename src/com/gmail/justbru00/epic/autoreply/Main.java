@@ -10,11 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /** 
- * @author justb_000
+ * @author Justin Brubaker
  *
  *    EpicAutoReply by Justin Brubaker is a plugin that autoreplys to chat.
  *   Copyright (C) 2015  Justin Brubaker
@@ -43,6 +45,7 @@ public class Main extends JavaPlugin implements Listener{
 	public String prefix = color("&8[&bEpic&fAutoReply&8] &f");
 	public PluginDescriptionFile pdffile = this.getDescription();
 	public long waitTime = 500;
+	public boolean justinOnline = false;
 	
 
 	@Override
@@ -87,6 +90,24 @@ public class Main extends JavaPlugin implements Listener{
 	    }
 	    
 	    @EventHandler
+	    public void Player(PlayerJoinEvent e) {
+	    	Player p = e.getPlayer();
+	    	
+	    	if (p.getName() == "JustBru00") {
+	    		justinOnline = true;
+	    	}
+	    }
+	    
+	    @EventHandler
+	    public void Player(PlayerQuitEvent e) {
+	    	Player p = e.getPlayer();
+	    	
+	    	if (p.getName() == "JustBru00") {
+	    	justinOnline = false;	
+	    	}	    	
+	    }
+	    
+	    @EventHandler
 	    public void Player(PlayerChatEvent e){
 	    	Player p = e.getPlayer();
 	    	
@@ -123,7 +144,19 @@ public class Main extends JavaPlugin implements Listener{
 	    			error("Error in waitTimer method. In check: how do i get to my plot.", p);
 	    		}	    		
 	    	}
-	    
+	    	if (e.getMessage().toLowerCase().contains("justin") || e.getMessage().toLowerCase().contains("justin?")) {		    	
+	    		if (waitTimer(waitTime)) {
+	    			if(justinOnline){
+	    				Bukkit.dispatchCommand(console, "msg " + p.getName() + " Lucky you... JustBru00 is online in CONSOLE or In Game.");  
+	    			} else {
+	    				Bukkit.dispatchCommand(console, "msg " + p.getName() + " JustBru00 is NOT online in CONSOLE or In Game.");
+	    			}
+	    			
+	    	    
+	    		} else {
+	    			error("Error in waitTimer method. In check: Justin online", p);
+	    		}	    		
+	    	}
 	    }
 	    
 	    public boolean waitTimer(Long waitMills){
